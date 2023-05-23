@@ -18,9 +18,6 @@
       ()
     )
 
-  ; Auto-adjust image color levels
-  (gimp-drawable-levels-stretch drawable)
-
   ; Scale the image
   (let* (
         (image-width (car (gimp-image-width image)))
@@ -48,6 +45,12 @@
     ()
   )
 
+  ; Auto-adjust image color levels
+  ; Usually this is fine, but sometimes it produces weird results and manual
+  ; tuning is required. In those cases, hit undo to keep the other operations
+  ; but manually set the levels.
+  (gimp-drawable-levels-stretch drawable)
+
   ; Update the UI
   (gimp-displays-flush)
 
@@ -70,7 +73,7 @@
         (restart 0)
         (dct 0)
         )
-    ; (gimp-message (string-append "Save file: " filename))
+
     (file-jpeg-save RUN-NONINTERACTIVE
                     image
                     drawable
@@ -86,6 +89,12 @@
                     restart
                     dct
     )
+
+    ; There have been changes, but the idea here is to automate a
+    ; heavily-repetitive task, so avoiding one more dialog which
+    ; prompts for "are you sure you want to close?" when we've
+    ; already exported is helpful.
+    (gimp-image-clean-all image)
   )
 )
 
@@ -94,7 +103,7 @@
   "Adjust for eBay..."
   "Crop and adjust product photos for listing on ebay"
   "Sam Noedel"
-  "Copyright? Huh?"
+  "MIT"
   "May 22, 2023"
   ""                                    ; image type
   SF-IMAGE       "Image"                0
